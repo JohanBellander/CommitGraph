@@ -13,18 +13,38 @@ A command-line tool that fetches and visualizes commit statistics (lines of code
 
 ## Installation
 
-```bash
-npm install -g gh-commit-stats
+**One-line install:**
+
+**Windows (PowerShell):**
+```powershell
+irm https://raw.githubusercontent.com/JohanBellander/CommitGraph/master/scripts/install.ps1 | iex
 ```
 
-Or install from source:
+**macOS/Linux/WSL:**
+```bash
+curl -fsSL https://raw.githubusercontent.com/JohanBellander/CommitGraph/master/scripts/install.sh | bash
+```
+
+**Develop branch (latest in-progress features):**
+```powershell
+# Windows PowerShell
+$env:COMMITGRAPH_BRANCH='develop'; irm https://raw.githubusercontent.com/JohanBellander/CommitGraph/master/scripts/install.ps1 | iex
+```
 
 ```bash
-git clone <repository-url>
+# macOS/Linux/WSL
+COMMITGRAPH_BRANCH=develop curl -fsSL https://raw.githubusercontent.com/JohanBellander/CommitGraph/master/scripts/install.sh | bash
+```
+
+**Or install from source:**
+```bash
+git clone https://github.com/JohanBellander/CommitGraph.git
 cd CommitGraph
 npm install
 npm run build
 ```
+
+**Requirements:** Node.js ≥ 16.0.0
 
 ## Setup
 
