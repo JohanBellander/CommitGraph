@@ -53,19 +53,21 @@ npm install
 Write-Host "🔨 Building project..." -ForegroundColor Cyan
 npm run build
 
-# Create global symlink/alias
+# Create global command using npm link
+Write-Host "🔗 Setting up global command..." -ForegroundColor Cyan
+npm link
+
+# Also create a .cmd wrapper for better Windows compatibility
 $BinPath = "$InstallDir\dist\cli.js"
-$GlobalBin = "$env:USERPROFILE\AppData\Local\Microsoft\WindowsApps"
-
-# Try to add to PATH or create alias
-Write-Host "🔗 Setting up command..." -ForegroundColor Cyan
-
-# Create a wrapper script in a common location
-$WrapperPath = "$env:USERPROFILE\ghstats.ps1"
-@"
-#!pwsh
-node `"$BinPath`" `$args
-"@ | Out-File -FilePath $WrapperPath -Encoding UTF8
+$LocalBin = "$env:USERPROFILE\AppData\Local\Microsoft\WindowsApps"
+if (Test-Path $LocalBin) {
+    $CmdWrapper = "$LocalBin\ghstats.cmd"
+    @"
+@echo off
+node "$BinPath" %*
+"@ | Out-File -FilePath $CmdWrapper -Encoding ASCII
+    Write-Host "✓ Created wrapper at $CmdWrapper" -ForegroundColor Green
+}
 
 Write-Host ""
 Write-Host "✅ Installation complete!" -ForegroundColor Green
@@ -75,8 +77,9 @@ Write-Host "   1. Set your GitHub token:" -ForegroundColor Yellow
 Write-Host "      `$env:GITHUB_TOKEN = 'your-token-here'"
 Write-Host ""
 Write-Host "   2. Run the tool:" -ForegroundColor Yellow
-Write-Host "      node $BinPath --help"
-Write-Host "      # Or use the wrapper:"
-Write-Host "      $WrapperPath --help"
+Write-Host "      ghstats --help"
+Write-Host ""
+Write-Host "   If 'ghstats' is not recognized, restart your PowerShell session." -ForegroundColor Yellow
+Write-Host "   Or run directly: node $BinPath --help" -ForegroundColor Yellow
 Write-Host ""
 Write-Host "📚 For more info, visit: https://github.com/JohanBellander/CommitGraph" -ForegroundColor Cyan
