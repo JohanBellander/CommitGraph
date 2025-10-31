@@ -30,29 +30,22 @@ if ([int]$nodeMajorVersion -lt 16) {
 if (Test-Path $InstallDir) {
     Write-Host "📦 Updating existing installation..." -ForegroundColor Cyan
     Set-Location $InstallDir
-    try {
-        git fetch origin *>$null
-    } catch {}
-    $currentBranch = (git rev-parse --abbrev-ref HEAD 2>$null)
-    if ($currentBranch -ne $Branch) {
-        try {
-            git checkout $Branch *>$null
-        } catch {
-            try {
-                git checkout master *>$null
-            } catch {}
+    # Suppress all git output
+    $null = & git fetch origin 2>&1 | Out-Null
+    $currentBranch = (& git rev-parse --abbrev-ref HEAD 2>&1 | Out-String).Trim()
+    if ($currentBranch -and $currentBranch -ne $Branch) {
+        $null = & git checkout $Branch 2>&1 | Out-Null
+        if ($LASTEXITCODE -ne 0) {
+            $null = & git checkout master 2>&1 | Out-Null
         }
     }
-    try {
-        git pull origin $Branch *>$null
-    } catch {
-        try {
-            git pull origin master *>$null
-        } catch {}
+    $null = & git pull origin $Branch 2>&1 | Out-Null
+    if ($LASTEXITCODE -ne 0) {
+        $null = & git pull origin master 2>&1 | Out-Null
     }
 } else {
     Write-Host "📦 Cloning repository..." -ForegroundColor Cyan
-    git clone -b $Branch $RepoUrl $InstallDir
+    $null = & git clone -b $Branch $RepoUrl $InstallDir 2>&1 | Out-Null
     Set-Location $InstallDir
 }
 
