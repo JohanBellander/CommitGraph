@@ -29,23 +29,31 @@ if ([int]$nodeMajorVersion -lt 16) {
 # Clone or update repository
 if (Test-Path $InstallDir) {
     Write-Host "📦 Updating existing installation..." -ForegroundColor Cyan
-    Set-Location $InstallDir
-    # Suppress all git output using Start-Process
-    $fetchProc = Start-Process -FilePath "git" -ArgumentList "fetch", "origin" -PassThru -Wait -WindowStyle Hidden
-    $currentBranch = (& git rev-parse --abbrev-ref HEAD 2>$null).Trim()
-    if ($currentBranch -and $currentBranch -ne $Branch) {
-        $checkoutProc = Start-Process -FilePath "git" -ArgumentList "checkout", $Branch -PassThru -Wait -WindowStyle Hidden
-        if ($checkoutProc.ExitCode -ne 0) {
-            Start-Process -FilePath "git" -ArgumentList "checkout", "master" -PassThru -Wait -WindowStyle Hidden | Out-Null
+    Push-Location $InstallDir
+    try {
+        # Suppress all git output
+        $ErrorActionPreference = 'SilentlyContinue'
+        git fetch origin *> $null
+        $currentBranch = (git rev-parse --abbrev-ref HEAD 2>$null).Trim()
+        if ($currentBranch -and $currentBranch -ne $Branch) {
+            git checkout $Branch *> $null
+            if ($LASTEXITCODE -ne 0) {
+                git checkout master *> $null
+            }
         }
-    }
-    $pullProc = Start-Process -FilePath "git" -ArgumentList "pull", "origin", $Branch -PassThru -Wait -WindowStyle Hidden
-    if ($pullProc.ExitCode -ne 0) {
-        Start-Process -FilePath "git" -ArgumentList "pull", "origin", "master" -PassThru -Wait -WindowStyle Hidden | Out-Null
+        git pull origin $Branch *> $null
+        if ($LASTEXITCODE -ne 0) {
+            git pull origin master *> $null
+        }
+    } finally {
+        $ErrorActionPreference = 'Stop'
+        Pop-Location
     }
 } else {
     Write-Host "📦 Cloning repository..." -ForegroundColor Cyan
-    Start-Process -FilePath "git" -ArgumentList "clone", "-b", $Branch, $RepoUrl, $InstallDir -PassThru -Wait -WindowStyle Hidden | Out-Null
+    $ErrorActionPreference = 'SilentlyContinue'
+    git clone -b $Branch $RepoUrl $InstallDir *> $null
+    $ErrorActionPreference = 'Stop'
     Set-Location $InstallDir
 }
 
