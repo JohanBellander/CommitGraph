@@ -1,4 +1,5 @@
 # Install script for gh-commit-stats (PowerShell)
+# Version: 2.0 - Updated 2025-10-31
 # Usage: irm https://raw.githubusercontent.com/JohanBellander/CommitGraph/master/scripts/install.ps1 | iex
 
 $ErrorActionPreference = "Stop"
