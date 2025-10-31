@@ -30,22 +30,22 @@ if ([int]$nodeMajorVersion -lt 16) {
 if (Test-Path $InstallDir) {
     Write-Host "📦 Updating existing installation..." -ForegroundColor Cyan
     Set-Location $InstallDir
-    # Suppress all git output
-    $null = & git fetch origin 2>&1 | Out-Null
-    $currentBranch = (& git rev-parse --abbrev-ref HEAD 2>&1 | Out-String).Trim()
+    # Suppress all git output using Start-Process
+    $fetchProc = Start-Process -FilePath "git" -ArgumentList "fetch", "origin" -NoNewWindow -PassThru -Wait -WindowStyle Hidden
+    $currentBranch = (& git rev-parse --abbrev-ref HEAD 2>$null).Trim()
     if ($currentBranch -and $currentBranch -ne $Branch) {
-        $null = & git checkout $Branch 2>&1 | Out-Null
-        if ($LASTEXITCODE -ne 0) {
-            $null = & git checkout master 2>&1 | Out-Null
+        $checkoutProc = Start-Process -FilePath "git" -ArgumentList "checkout", $Branch -NoNewWindow -PassThru -Wait -WindowStyle Hidden
+        if ($checkoutProc.ExitCode -ne 0) {
+            Start-Process -FilePath "git" -ArgumentList "checkout", "master" -NoNewWindow -PassThru -Wait -WindowStyle Hidden | Out-Null
         }
     }
-    $null = & git pull origin $Branch 2>&1 | Out-Null
-    if ($LASTEXITCODE -ne 0) {
-        $null = & git pull origin master 2>&1 | Out-Null
+    $pullProc = Start-Process -FilePath "git" -ArgumentList "pull", "origin", $Branch -NoNewWindow -PassThru -Wait -WindowStyle Hidden
+    if ($pullProc.ExitCode -ne 0) {
+        Start-Process -FilePath "git" -ArgumentList "pull", "origin", "master" -NoNewWindow -PassThru -Wait -WindowStyle Hidden | Out-Null
     }
 } else {
     Write-Host "📦 Cloning repository..." -ForegroundColor Cyan
-    $null = & git clone -b $Branch $RepoUrl $InstallDir 2>&1 | Out-Null
+    Start-Process -FilePath "git" -ArgumentList "clone", "-b", $Branch, $RepoUrl, $InstallDir -NoNewWindow -PassThru -Wait -WindowStyle Hidden | Out-Null
     Set-Location $InstallDir
 }
 
