@@ -105,7 +105,11 @@ If you're using WSL (Windows Subsystem for Linux) and Node.js is not installed:
 
 ```bash
 # Last 30 days (default)
+# Note: Requires GITHUB_TOKEN environment variable or --token flag
 ghstats
+
+# Using token as command-line parameter
+ghstats --token your-token-here
 
 # Last 7 days
 ghstats --days 7

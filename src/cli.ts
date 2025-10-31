@@ -50,7 +50,18 @@ async function main() {
     const token = getGitHubToken(options.token);
     if (!token) {
       console.error(chalk.red('Error: GitHub authentication failed'));
-      console.error('Please set GITHUB_TOKEN environment variable or use --token flag');
+      console.error('');
+      console.error('Authentication options:');
+      console.error('  1. Set GITHUB_TOKEN environment variable:');
+      console.error('     PowerShell: $env:GITHUB_TOKEN = "your-token-here"');
+      console.error('     Bash/WSL:  export GITHUB_TOKEN="your-token-here"');
+      console.error('');
+      console.error('  2. Use --token flag (less secure):');
+      console.error('     ghstats --token your-token-here');
+      console.error('');
+      console.error('  3. Create a .env file in the project directory:');
+      console.error('     GITHUB_TOKEN=your-token-here');
+      console.error('');
       console.error('Generate a token at: https://github.com/settings/tokens');
       console.error('Required scope: repo');
       process.exit(1);

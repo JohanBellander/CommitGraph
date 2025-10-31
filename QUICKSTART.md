@@ -37,6 +37,9 @@ curl -fsSL https://raw.githubusercontent.com/JohanBellander/CommitGraph/master/s
 ## Quick Usage
 
 ```bash
+# Using token as command-line parameter
+ghstats --token your-token-here
+
 # Last 30 days (default)
 ghstats
 
@@ -54,6 +57,9 @@ ghstats --repos "myproject-*" --exclude "test-*"
 
 # Verbose output
 ghstats --verbose
+
+# Combined example with token
+ghstats --token your-token-here --days 14 --output summary --verbose
 ```
 
 ## Output Formats
