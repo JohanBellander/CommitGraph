@@ -29,7 +29,6 @@ export function loadConfig(): Config {
 
 export function getGitHubToken(cliToken?: string): string | null {
   if (cliToken) {
-    console.warn('Warning: Passing token via CLI flag is not secure. Use GITHUB_TOKEN environment variable instead.');
     return cliToken;
   }
 
