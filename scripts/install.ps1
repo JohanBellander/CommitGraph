@@ -30,14 +30,17 @@ if ([int]$nodeMajorVersion -lt 16) {
 if (Test-Path $InstallDir) {
     Write-Host "📦 Updating existing installation..." -ForegroundColor Cyan
     Set-Location $InstallDir
-    git fetch origin
-    git checkout $Branch 2>$null
-    if ($LASTEXITCODE -ne 0) {
-        git checkout master
+    git fetch origin 2>$null | Out-Null
+    $currentBranch = git rev-parse --abbrev-ref HEAD 2>$null
+    if ($currentBranch -ne $Branch) {
+        git checkout $Branch 2>$null | Out-Null
+        if ($LASTEXITCODE -ne 0) {
+            git checkout master 2>$null | Out-Null
+        }
     }
-    git pull origin $Branch 2>$null
+    git pull origin $Branch 2>$null | Out-Null
     if ($LASTEXITCODE -ne 0) {
-        git pull origin master
+        git pull origin master 2>$null | Out-Null
     }
 } else {
     Write-Host "📦 Cloning repository..." -ForegroundColor Cyan
